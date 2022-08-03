@@ -35,3 +35,7 @@
 Bin/
 build/
 Build/
+
+# Kdev files
+.kdev4/
+*.kdev4
