@@ -15,6 +15,8 @@ add_compile_options(-std=c++14)
 
 add_executable(${PROJECT_NAME}
     Source/Main.cpp
+    Source/Types.h
+    Source/Processing/AdaptiveDetection.h
 )
 
 linkgorgon(${PROJECT_NAME})

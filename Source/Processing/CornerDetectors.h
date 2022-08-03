@@ -3,7 +3,10 @@
 #include "../Types.h"
 
 namespace CornerDetections {
-        class CornerDetectors {
+    class CornerDetectors {
+        public:
+            virtual ~CornerDetectors(){}
+            
             /*
              *  Pre process will render the polygon list and prepeare to detect corners
             */
