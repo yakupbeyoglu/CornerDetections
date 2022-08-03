@@ -3,9 +3,18 @@
 #include "CornerDetectors.h"
 #include <vector>
 namespace CornerDetections{
+    
+    /*
+     *  This class aims to detect corner with
+     *  Adaptive algortihm for corner detecting based on 
+     *  degree of sharpness of the contour
+     *  You can find reference at below :
+     *  Xiao, J., Xiang, Z., Wang, B., & Liu, Y. (2011). Adaptive algorithm for corner detecting based on the degree of sharpness of the 
+     *  contour. Optical Engineering, 50(4), 047008.
+     */
     class AdaptiveDetection: public CornerDetectors {
     public:
-        AdaptiveDetection(const std::vector<Types::PointList> &list);
+        AdaptiveDetection(std::vector<Types::PointList> list);
         
         /*
          *  Delete copy constructors 
@@ -24,6 +33,7 @@ namespace CornerDetections{
         virtual Types::PointList DetectCorners(const Types::PointList &list) override;
     private:
         std::vector<Types::PointList> pointlist;
+        Types::PointList FindCandidatePoints(const Types::PointList &list);
  };
     
 }
