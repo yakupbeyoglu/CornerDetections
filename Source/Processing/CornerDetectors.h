@@ -17,7 +17,7 @@ namespace CornerDetections {
             */
             virtual Types::PointList DetectCorners(const Types::PointList &list) = 0;
             
-            virtual float GetDistance(const Types::Point &point1, const Types::Point &point2) = 0;
+            virtual float GetDistance(const Types::Point &point1, const Types::Point &point2)const = 0;
     };
     
 }
