@@ -41,6 +41,13 @@ namespace CornerDetections{
         Types::PointList FindCandidatePoints(const Types::PointList &list);
         
         /*
+         *  Return Sharpness value between two points 
+         *  Sharpness function of the article that references above of the class 
+         */
+        float GetSharpness(const Types::Point& p1, const Types::Point& p2, 
+                           const Types::Point& p3)const;
+
+        /*
          *  Clamp index to cycle Pi + k and Pi - k
          */
         int Clamp(int size, int current, int k) const;
@@ -48,7 +55,10 @@ namespace CornerDetections{
         /*
          *  Get Distnace Between two points
          */
-        virtual float GetDistance(const Types::Point &p1, const Types::Point &p2) const override;
+        virtual float GetDistance(const Types::Point &p1, const Types::Point &p2
+                                  ) const override;
+        
+        
  };
     
 }

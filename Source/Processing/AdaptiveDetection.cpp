@@ -15,7 +15,7 @@ namespace CornerDetections {
         return candidatepoints;
     }
     
-    int AdaptiveDetection::Clamp(int size, int current, int k) const {
+    int AdaptiveDetection::Clamp(int size, int current, int k)const {
         if(current - k < 0)
             current = size - k + current;
         else if (current + k > size)
@@ -23,8 +23,14 @@ namespace CornerDetections {
         return current;
     }
     
+    float AdaptiveDetection::GetSharpness(const Types::Point &p1, const Types::Point &p2, 
+                                          const Types::Point &p3)const {
+
+        return 1 - ( GetDistance(p2, p3) / (GetDistance(p1,p3) + GetDistance(p1, p2)));
+    }
+    
     float AdaptiveDetection::GetDistance(const Types::Point &p1, 
-                                         const Types::Point &p2) const { 
+                                         const Types::Point &p2)const { 
                                              
             float xdiff = p1.X - p2.X;
             float ydiff = p1.Y - p2.Y;
