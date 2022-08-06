@@ -2,6 +2,7 @@
 #define AdaptiveDetection_h
 #include "CornerDetectors.h"
 #include <vector>
+#include <numeric>
 namespace CornerDetections{
     
     /*
@@ -33,12 +34,14 @@ namespace CornerDetections{
         virtual void PreProcess() override;
         
         virtual Types::PointList DetectCorners(const Types::PointList &list) override;
-    private:
-        std::vector<Types::PointList> pointlist;
+        
         /*
          *  Find the candidate points with the sharpness degreee 
          */
-        Types::PointList FindCandidatePoints(const Types::PointList &list);
+        Types::PointList FindCandidatePoints(const Types::PointList &list, const int &step);
+    private:
+        std::vector<Types::PointList> pointlist;
+
         
         /*
          *  Return Sharpness value between two points 
@@ -47,6 +50,12 @@ namespace CornerDetections{
         float GetSharpness(const Types::Point& p1, const Types::Point& p2, 
                            const Types::Point& p3)const;
 
+        /*
+         *  Return Adaptive sharpness Threshold value
+         *  According to referenced article, we should calculate 
+         *  The mean of Non zero sharpness values
+         */
+        float GetAdaptiveTh(const std::vector<float> & sharpness) const;
         /*
          *  Clamp index to cycle Pi + k and Pi - k
          */
