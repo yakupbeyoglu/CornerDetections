@@ -1,6 +1,8 @@
- cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8)
+cmake_policy(SET CMP0054 NEW)
 
 set(PROJECT_NAME "CornerDetections")
+set(CMAKE_CXX_STANDARD 14)
 
 project(${PROJECT_NAME})
 
@@ -13,12 +15,9 @@ find_package(Gorgon REQUIRED)
 
 add_compile_options(-std=c++14)
 
-add_executable(${PROJECT_NAME}
-    Source/Main.cpp
-    Source/Types.h
-    Source/Processing/AdaptiveDetection.h
-)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/Source/Main.cpp)
 
 linkgorgon(${PROJECT_NAME})
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Source/)

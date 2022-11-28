@@ -1,0 +1,5 @@
+set (Local
+    AdaptiveDetection.cpp
+    AdaptiveDetection.h
+    CornerDetectos.h
+)
