@@ -48,6 +48,10 @@ jobs:
           cmake ..
           make -j8
           sudo cmake --install .
+      - name: Gorgon install cmake
+        run: |
+          cd Gorgon/build
+          sudo cmake --install .
 
       - name: Create executable
         working-directory: .
