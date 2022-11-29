@@ -1,4 +1,4 @@
-name: KOPI Fit Encoder
+name: Corner Detection
 on:
   push:
     branches-ignore:
@@ -24,10 +24,27 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
           sudo update-alternatives --set gcc /usr/bin/gcc-10
       
-      - name: build_gorgon_dependencies
+      - name: Build gorgon dependencies
         run: |
           sudo apt-get install -y gcc cmake cmake-gui libx11-dev libxinerama-dev libxrandr-dev libxtst-dev doxygen freetype2-demos libfifechan-dev libfreetype6-dev libpulse-dev libfontconfig1-dev libflac-dev libvorbis-dev
           sudo apt-get install -y ssh mercurial 
+
+      # Cache Gorgon 
+      - name: Gorgon
+        id: cache_gorgon
+        uses: actions/cache@v3
+        with:
+          path: '${{github.workspace}}/Gorgon'
+          key: '${{runner.os}}_gorgon'
+        
+      - name: Gorgon
+        if: ${{ steps.cache_gorgon.outputs.cache-hit != 'true'}}
+        run: |
+          hg clone https://repo.darkgaze.org/Gorgon/
+          cd Gorgon/
+          make -j8
+          sudo make install
+
       # - name: Create executable
       #   working-directory: .
       #   run: |
