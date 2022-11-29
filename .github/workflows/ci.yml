@@ -48,7 +48,8 @@ jobs:
           cmake ..
           make -j8
           sudo cmake --install .
-      - name: Gorgon install cmake
+        
+      - name: Link gorgon
         run: |
           cd Gorgon/build
           sudo cmake --install .
