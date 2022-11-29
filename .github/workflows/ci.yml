@@ -6,7 +6,7 @@ on:
       - "wip.*"
 jobs:
   release:
-    name: CD
+    name: CI
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -24,13 +24,17 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
           sudo update-alternatives --set gcc /usr/bin/gcc-10
       
-      - name: Create executable
-        working-directory: .
+      - name: build_gorgon_dependencies
         run: |
-          cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
-          make -j8 -C build
+          sudo apt-get install -y gcc cmake cmake-gui libx11-dev libxinerama-dev libxrandr-dev libxtst-dev doxygen freetype libfifechan-dev libfreetype6-dev libpulse-dev libfontconfig1-dev libflac-dev libvorbis-dev
+          sudo apt-get install -y ssh mercurial 
+      # - name: Create executable
+      #   working-directory: .
+      #   run: |
+      #     cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
+      #     make -j8 -C build
       
-      - name: Run ctest
-        working-directory: ./build
-        run: |
-          ctest
+      # - name: Run ctest
+      #   working-directory: ./build
+      #   run: |
+      #     ctest
