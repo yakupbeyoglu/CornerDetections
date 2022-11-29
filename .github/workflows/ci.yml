@@ -37,11 +37,14 @@ jobs:
           path: '${{github.workspace}}/Gorgon'
           key: '${{runner.os}}_gorgon'
         
-      - name: Gorgon
+      - name: Gorgon Install
         if: ${{ steps.cache_gorgon.outputs.cache-hit != 'true'}}
         run: |
           hg clone https://repo.darkgaze.org/Gorgon/
           cd Gorgon/
+          mkdir build
+          cd build 
+          cmake ..
           make -j8
           sudo make install
 
