@@ -52,10 +52,10 @@ jobs:
       - name: Create executable
         working-directory: .
         run: |
-          cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
-          make -j8 -C build
+          sudo cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
+          sudo make -j8 -C build
       
       - name: Run ctest
         working-directory: ./build
         run: |
-          ctest
+          sudo ctest
