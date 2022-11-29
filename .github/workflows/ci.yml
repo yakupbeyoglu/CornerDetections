@@ -47,7 +47,6 @@ jobs:
           cd build 
           cmake ..
           make -j8
-          sudo cmake --install .
         
       - name: Link gorgon
         run: |
