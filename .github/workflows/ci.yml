@@ -41,8 +41,8 @@ jobs:
         if: ${{ steps.cache_gorgon.outputs.cache-hit != 'true'}}
         run: |
           hg clone https://repo.darkgaze.org/Gorgon/
-          hg checkout 4.x-dev
           cd Gorgon/
+          hg checkout 4.x-dev
           mkdir build
           cd build 
           cmake ..
