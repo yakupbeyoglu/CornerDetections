@@ -49,13 +49,13 @@ jobs:
           make -j8
           sudo make install
 
-      # - name: Create executable
-      #   working-directory: .
-      #   run: |
-      #     cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
-      #     make -j8 -C build
+      - name: Create executable
+        working-directory: .
+        run: |
+          cmake  -Bbuild -DCMAKE_BUILD_TYPE=Release
+          make -j8 -C build
       
-      # - name: Run ctest
-      #   working-directory: ./build
-      #   run: |
-      #     ctest
+      - name: Run ctest
+        working-directory: ./build
+        run: |
+          ctest
