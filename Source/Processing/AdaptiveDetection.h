@@ -16,8 +16,8 @@ namespace CornerDetections{
     class AdaptiveDetection: public CornerDetectors {
     public:
         AdaptiveDetection(std::vector<Types::PointList> list);
-        static void Test(){
-            std::cout<<"ADAPTIVE DETECTION"<<std::endl;
+        static std::string Test(){
+            return "TEST";
         }
         /*
          *  Delete copy constructors 
