@@ -8,10 +8,16 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+set(files
+    ${CMAKE_CURRENT_BINARY_DIR}/../Source/Processing/AdaptiveDetection.cpp
 
+    )
 add_executable(
   hello_test
   hello_test.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.cpp                            
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.h                            
+
 )
 target_link_libraries(
   hello_test
@@ -21,3 +27,5 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(hello_test)
 linkgorgon(hello_test)
+
+link_directories(${CMAKE_CURRENT_LIST_DIR}/../Source/)

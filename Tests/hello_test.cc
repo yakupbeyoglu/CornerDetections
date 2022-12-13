@@ -5,23 +5,18 @@
 
 #include "../Source/Processing/AdaptiveDetection.h"
 
-// Demonstrate some basic assertions.
-TEST(HelloTest, BasicAssertions) {
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
-  EXPECT_EQ(8 * 6, 48);
+// Test for CyclicngClamp
+TEST(CyclingClamTest, BasicAssertions) {
 
-}
+    std::vector<Types::PointList> list = {};
+    CornerDetections::AdaptiveDetection adaptive(std::move(list));
+    EXPECT_TRUE(adaptive.Clamp(5,3,2) == 0);
+    EXPECT_TRUE(adaptive.Clamp(5,1,-2) == 4);
+    EXPECT_TRUE(adaptive.Clamp(5,2,-5) == 2);
+    EXPECT_TRUE(adaptive.Clamp(5,3,-1) == 2);
+    EXPECT_TRUE(adaptive.Clamp(5,1,4) == 0);
+    EXPECT_TRUE(adaptive.Clamp(5,1,6) == 2);
+    EXPECT_TRUE(adaptive.Clamp(5,1,8) == 4);
+    EXPECT_TRUE(adaptive.Clamp(5,1,-8) == 3);
 
-// Demonstrate some basic assertions.
-TEST(HelloTest2, BasicAssertions) {
-  std::string  s = CornerDetections::AdaptiveDetection::Test();
-  std::string s2 = "test";
-  EXPECT_TRUE(s != s2);
-  Types::Point p;
-  p = {3,5};
-  EXPECT_TRUE(p.X == 3 && p.Y == 5);
-  EXPECT_FALSE(p.X == 5);
 }

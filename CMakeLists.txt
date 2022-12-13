@@ -15,7 +15,10 @@ find_package(Gorgon REQUIRED)
 
 add_compile_options(-std=c++17)
 
-add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/Source/Main.cpp)
+add_executable(${PROJECT_NAME} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Processing/AdaptiveDetection.cpp                            
+)
 
 linkgorgon(${PROJECT_NAME})
 
