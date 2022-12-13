@@ -20,5 +20,8 @@ TEST(HelloTest2, BasicAssertions) {
   std::string  s = CornerDetections::AdaptiveDetection::Test();
   std::string s2 = "test";
   EXPECT_TRUE(s != s2);
-
+  Types::Point p;
+  p = {3,5};
+  EXPECT_TRUE(p.X == 3 && p.Y == 5);
+  EXPECT_FALSE(p.X == 5);
 }
