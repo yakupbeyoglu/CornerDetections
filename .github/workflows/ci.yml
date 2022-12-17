@@ -62,4 +62,4 @@ jobs:
       - name: Run ctest
         working-directory: ./build
         run: |
-          sudo ctest
+          sudo ctest --verbose

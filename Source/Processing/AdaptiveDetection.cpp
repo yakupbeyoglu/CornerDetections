@@ -10,7 +10,7 @@ void AdaptiveDetection::PreProcess() {
     // TO DO : Pre process
 }
 
-Types::PointList AdaptiveDetection::FindCandidatePoints(const Types::PointList &list, const int &step) {
+Types::PointList AdaptiveDetection:: FindCandidatePoints(const Types::PointList &list, const int &step) {
     Types::PointList candidatepoints;
     size_t listsize = list.GetSize();
     std::vector<float> sharpness;
@@ -32,7 +32,7 @@ Types::PointList AdaptiveDetection::FindCandidatePoints(const Types::PointList &
 }
 
 int AdaptiveDetection::Clamp(int size, int current, int k)const {
-    return ((current + k) % size + size) %size;
+    return ((current + k) % size + size) % size;
 }
 
 float AdaptiveDetection::GetSharpness(const Types::Point &p1, const Types::Point &p2,
@@ -45,12 +45,14 @@ float AdaptiveDetection::GetAdaptiveTh(const std::vector<float> &sharpness)const
     // filter nonzero elements
     std::vector<float> nonzero;
     std::copy_if(sharpness.begin(), sharpness.end(), std::back_inserter(nonzero), [](float sharp) {
-        return sharp != 0;
+        return sharp != 0;\
     }
                 );
 
+    if(nonzero.size() == 0)
+        return 0;
     // return mean of nonzero
-    return std::accumulate(nonzero.begin(), nonzero.end(), 0) / nonzero.size();
+    return std::accumulate(nonzero.begin(), nonzero.end(), 0.0) / nonzero.size();
 }
 
 

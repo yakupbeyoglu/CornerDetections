@@ -46,7 +46,7 @@ public:
     Types::PointList FindCandidatePoints(const Types::PointList &list, const int &step);
 
     /*
-     *  Return Sharpness value between two points
+     *  Return Sharpness value between three points
      *  Sharpness function of the article that references above of the class
      */
     float GetSharpness(const Types::Point& p1, const Types::Point& p2,

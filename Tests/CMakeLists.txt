@@ -13,19 +13,19 @@ set(files
 
     )
 add_executable(
-  hello_test
-  hello_test.cc
+  AdaptiveDetectionTest
+  AdaptiveDetection_test.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.cpp                            
   ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.h                            
 
 )
 target_link_libraries(
-  hello_test
+  AdaptiveDetectionTest
   GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
-linkgorgon(hello_test)
+gtest_discover_tests(AdaptiveDetectionTest)
+linkgorgon(AdaptiveDetectionTest)
 
 link_directories(${CMAKE_CURRENT_LIST_DIR}/../Source/)
