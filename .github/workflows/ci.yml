@@ -17,7 +17,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-
+          
+      - name: Update resources
+        run: |
+          sudo apt-get update -y
+      
       - name: Add g++ 10 for c++ 17 support
         run: |
           sudo apt install gcc-10 g++-10
