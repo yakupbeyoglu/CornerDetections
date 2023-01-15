@@ -52,6 +52,7 @@ public:
     float GetSharpness(const Types::Point& p1, const Types::Point& p2,
                        const Types::Point& p3)const;
 
+
     /*
      *  Return Adaptive sharpness Threshold value
      *  According to referenced article, we should calculate
@@ -68,6 +69,19 @@ public:
      */
     virtual float GetDistance(const Types::Point &p1, const Types::Point &p2
                              ) const override;
+
+    /*
+    *  Return new point list which salient points already deleted
+    *  The salient points are causing the localization problem on the detection
+    *  The salient points should be filtered based on the degree and curve fitting
+    */
+    Types::PointList RemoveSalientPoints(const Types::PointList &list);
+
+    /*
+     *   Find direction between two points
+     */
+    Types::Direction FindDirection(const Types::Point &p1, const Types::Point &p2)const;
+    
 private:
     std::vector<Types::PointList> pointlist;
 };
@@ -75,3 +89,4 @@ private:
 }
 
 #endif
+

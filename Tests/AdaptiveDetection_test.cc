@@ -34,6 +34,7 @@ TEST(AdaptiveTHTest, BasicAssertions) {
 
 TEST (DistanceTEST, BasicAssertions) {
     EXPECT_TRUE(std::round(adaptive.GetDistance({2, 3}, {4, 5})) == 3);
+
 }
 
 TEST (SharpnessTEST, BasicAssertions) {
@@ -48,5 +49,27 @@ TEST (SharpnessTEST, BasicAssertions) {
     float real = adaptive.GetSharpness(p2,p1,p3);
     float expected = 1 - (distanceup / (distancep2p1 + distancep2p3));
     EXPECT_TRUE(real == expected);
+}
+
+TEST (FindDirectionTest, BasicAssertions) {
+    Types::Point p1 = {0, 0};
+    Types::Point p2 = {1, 0};
+
+    EXPECT_EQ(adaptive.FindDirection(p1, p2), Types::Direction::E);
+    EXPECT_EQ(adaptive.FindDirection(p2, p1), Types::Direction::W);
+
+    p2 = {0, 1};
+    EXPECT_EQ(adaptive.FindDirection(p1, p2), Types::Direction::S);
+    EXPECT_EQ(adaptive.FindDirection(p2, p1), Types::Direction::N);
+
+    p2 = {1, 1};
+    EXPECT_EQ(adaptive.FindDirection(p1, p2), Types::Direction::SE);
+    EXPECT_EQ(adaptive.FindDirection(p2, p1), Types::Direction::NW);
+
+    p2 = {-1, 1};
+    EXPECT_EQ(adaptive.FindDirection(p1, p2), Types::Direction::SW);
+    EXPECT_EQ(adaptive.FindDirection(p2, p1), Types::Direction::NE);
+
+
 
 }

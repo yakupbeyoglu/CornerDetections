@@ -41,11 +41,13 @@ float AdaptiveDetection::GetSharpness(const Types::Point &p1, const Types::Point
     return 1 - ( GetDistance(p2, p3) / (GetDistance(p1,p3) + GetDistance(p1, p2)));
 }
 
+
 float AdaptiveDetection::GetAdaptiveTh(const std::vector<float> &sharpness)const {
     // filter nonzero elements
     std::vector<float> nonzero;
     std::copy_if(sharpness.begin(), sharpness.end(), std::back_inserter(nonzero), [](float sharp) {
-        return sharp != 0;\
+        return sharp != 0;
+        \
     }
                 );
 
@@ -64,4 +66,35 @@ float AdaptiveDetection::GetDistance(const Types::Point &p1,
     return std::sqrt(std::pow(xdiff,2) + std::pow(ydiff, 2));
 }
 
+/*
+ *   Find direction between two points
+ */
+Types::Direction AdaptiveDetection::FindDirection(const Types::Point &p1, const Types::Point &p2) const {
+    Types::Direction direction;
+    if(p1.Y == p2.Y) {
+        if(p1.X > p2.X)
+            direction = Types::Direction::W;
+        else if (p1.X < p2.X)
+            direction = Types::Direction::E;
+        else
+            direction = Types::Direction::SAME;
+    }
+    else if (p1.Y > p2.Y) {
+        if (p1.X == p2.X)
+            direction = Types::Direction::N;
+        else if(p1.X > p2.X)
+            direction = Types::Direction::NW;
+        else
+            direction = Types::Direction::NE;
+    }
+    else {
+        if(p1.X == p2.X)
+            direction = Types::Direction::S;
+        else if (p1.X > p2.X)
+            direction = Types::Direction::SW;
+        else
+            direction = Types::Direction::SE;
+    }
+    return direction;
+}
 }
