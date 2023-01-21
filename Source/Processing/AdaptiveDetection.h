@@ -19,6 +19,7 @@ public:
     static std::string Test() {
         return "TEST";
     }
+    
     /*
      *  Delete copy constructors
     */
@@ -52,13 +53,13 @@ public:
     float GetSharpness(const Types::Point& p1, const Types::Point& p2,
                        const Types::Point& p3)const;
 
-
     /*
      *  Return Adaptive sharpness Threshold value
      *  According to referenced article, we should calculate
      *  The mean of Non zero sharpness values
      */
     float GetAdaptiveTh(const std::vector<float> & sharpness) const;
+    
     /*
      *  Clamp index to cycle Pi + k and Pi - k
      */
@@ -75,8 +76,9 @@ public:
     *  The salient points are causing the localization problem on the detection
     *  The salient points should be filtered based on the degree and curve fitting
     */
-    Types::PointList RemoveSalientPoints(const Types::PointList &list);
+    Types::PointList RemoveSalientPoints(const Types::PointList &list)const;
 
+    std::vector<int>  FindSalientPoints(const Types::PointList &list, const int startindex = 0)const;
     /*
      *   Find direction between two points
      */

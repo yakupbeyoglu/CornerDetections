@@ -69,7 +69,26 @@ TEST (FindDirectionTest, BasicAssertions) {
     p2 = {-1, 1};
     EXPECT_EQ(adaptive.FindDirection(p1, p2), Types::Direction::SW);
     EXPECT_EQ(adaptive.FindDirection(p2, p1), Types::Direction::NE);
+    
+    EXPECT_EQ(adaptive.FindDirection(p2, p2), Types::Direction::SAME);
 
+}
 
-
+TEST(FindSalientPoints, BasicAssertions) {
+    Types::PointList testlist = {
+        {0, 1}, {1, 1}, {2, 1} , {3, 0}, {4, 0}, {5, 0}, {6, 1}, {7, 1}, {8, 1} 
+    };
+    std::vector<int> expected = {3, 4, 5};
+    std::vector<int> list = adaptive.FindSalientPoints(testlist, 0);
+    std::cout<<"MY SIZE = " << list.size() << std::endl;
+    EXPECT_EQ(expected.size(), list.size());
+    for(int i = 0; i < list.size(); i++)
+        EXPECT_EQ(expected[i], list[i]);
+    
+    Types::PointList testlist2 = {
+        {0, 1}, {1, 1}, {2, 1}, {3, 2}, {4, 2}, {5, 2}, {6, 1}, {7, 1}, {8, 1},{ 9, 0},{10, 1}
+    };
+    
+    std::vector<int> expected2 = {3, 4, 5, 9};
+    std::vector<int> nlist2 = adaptive.FindSalientPoints(testlist2, 0);
 }

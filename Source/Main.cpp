@@ -19,6 +19,10 @@ int main() {
 
     Types::PointList list2(std::move(points));
     auto a = adaptive.FindCandidatePoints(list2, 5);
-    
+    Types::PointList testlist = {
+        {0, 1}, {1, 1}, {2, 1}, {3, 0}, {4, 0}, {5, 0}, {6, 1}, {7, 1}, {8, 1}
+    };
+    std::vector<int> expected = {3, 4, 5};
+    std::vector<int> nlist = adaptive.FindSalientPoints(testlist, 0);
     return 0;
 }
