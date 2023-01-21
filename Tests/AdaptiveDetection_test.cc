@@ -80,7 +80,7 @@ TEST(FindSalientPoints, BasicAssertions) {
     };
     std::vector<int> expected = {3, 4, 5};
     std::vector<int> list = adaptive.FindSalientPoints(testlist, 0);
-    std::cout<<"MY SIZE = " << list.size() << std::endl;
+    
     EXPECT_EQ(expected.size(), list.size());
     for(int i = 0; i < list.size(); i++)
         EXPECT_EQ(expected[i], list[i]);
@@ -90,5 +90,9 @@ TEST(FindSalientPoints, BasicAssertions) {
     };
     
     std::vector<int> expected2 = {3, 4, 5, 9};
-    std::vector<int> nlist2 = adaptive.FindSalientPoints(testlist2, 0);
+    std::vector<int> list2 = adaptive.FindSalientPoints(testlist2, 0);
+    EXPECT_EQ(expected2.size(), list2.size());
+    for(int i = 0; i < list.size(); i++)
+        EXPECT_EQ(expected2[i], list2[i]);
+    
 }
