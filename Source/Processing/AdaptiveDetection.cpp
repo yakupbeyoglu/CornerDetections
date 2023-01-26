@@ -101,25 +101,25 @@ Types::PointList AdaptiveDetection::RemoveSalientPoints(const Types::PointList &
         throw std::runtime_error("Size of point list must be equal or greater than 2");
 
     int i = 1;
-    Types::Direction lastdirection = FindDirection(list[0], list[1]);
-    Types::Direction direction;
-    while(i <= length - 2) {
-        std::vector<int> sailentlist;
-        direction = FindDirection(list[i], list[i+1]);
+    while( i < list.GetSize() - 2) {
         int step = 0;
+        std::vector<int> indexes;
         do {
-            if(list[i].Y < list[i+1].Y)
-                step += 1;
-            else if(list[i].Y > list[i + 1].Y)
-                step -=1;
-
-            direction = FindDirection(list[i], list[i+1]);
-            sailentlist.push_back(i);
             i++;
-        } while(step != 0 && i <= length - 2 && lastdirection !=  direction);
+            if(list[i].Y < list[i+1].Y) {
+                step += 1;
+            }
+            else if(list[i].Y > list[i + 1].Y) {
+                step -=1;
+            }
+            
+            if(step !=0)
+                indexes.push_back(i+1);
 
-        if(sailentlist.size() > 1) {
-
+        } while(step != 0 && i < list.GetSize() - 2);
+        
+        if(indexes.size() != 0) {
+                // TODO Angle calculation
         }
     }
     return filteredlist;
@@ -155,5 +155,22 @@ Types::Direction AdaptiveDetection::FindDirection(const Types::Point &p1, const 
             direction = Types::Direction::SE;
     }
     return direction;
+}
+
+
+AdaptiveDetection::LineFitting AdaptiveDetection::FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy)const {
+    double slope;
+    double b;
+    if(overy) {
+         slope = (p2.Y - p1.Y) / (p2.X - p1.X);
+         b = p2.Y - slope * p2.X;
+         
+    }
+    else {
+         slope = (p2.X - p1.X) / (p2.Y - p1.Y);
+         b = p2.X - slope * p2.Y;
+    }
+    
+    return {slope, b, overy};
 }
 }

@@ -15,6 +15,12 @@ namespace CornerDetections {
  */
 class AdaptiveDetection: public CornerDetectors {
 public:
+    struct LineFitting {
+        double slope; // m
+        double b;
+        bool overy;
+    };
+    
     AdaptiveDetection(std::vector<Types::PointList> list);
     static std::string Test() {
         return "TEST";
@@ -59,7 +65,6 @@ public:
      *  The mean of Non zero sharpness values
      */
     float GetAdaptiveTh(const std::vector<float> & sharpness) const;
-    
     /*
      *  Clamp index to cycle Pi + k and Pi - k
      */
@@ -70,6 +75,7 @@ public:
      */
     virtual float GetDistance(const Types::Point &p1, const Types::Point &p2
                              ) const override;
+                             
 
     /*
     *  Return new point list which salient points already deleted
@@ -77,7 +83,17 @@ public:
     *  The salient points should be filtered based on the degree and curve fitting
     */
     Types::PointList RemoveSalientPoints(const Types::PointList &list)const;
-
+    
+    /*
+     *  The threshold vlaue can be changed between 1 and 1.5 according to
+     *  Article (18) 
+     *  y =  0, if |AD| >= TS
+     *  y =  1, if |AD| < TS 
+     *  1 <= TS <= 1.5
+     *  if overy == true,  |AD| = | m * p.x + b - p.y | * (1 /  sqrt(1 + pow(m, 2))) 
+     *  if overy == false, |AD| = | p.x - m * p.y - b |
+     */
+    bool IsSalient(const Types::Point p, const LineFitting fitinfo,  double threshold = 1);
     std::vector<int>  FindSalientPoints(const Types::PointList &list, const int startindex = 0)const;
     /*
      *   Find direction between two points
@@ -86,6 +102,9 @@ public:
     
 private:
     std::vector<Types::PointList> pointlist;
+    
+    LineFitting FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy = true)const;
+    
 };
 
 }
