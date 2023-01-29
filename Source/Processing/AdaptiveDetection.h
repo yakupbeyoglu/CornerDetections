@@ -82,7 +82,7 @@ public:
     *  The salient points are causing the localization problem on the detection
     *  The salient points should be filtered based on the degree and curve fitting
     */
-    Types::PointList RemoveSalientPoints(const Types::PointList &list)const;
+    Types::PointList RemoveSalientPoints(const Types::PointList &list, double threshold = 1)const;
     
     /*
      *  The threshold vlaue can be changed between 1 and 1.5 according to
@@ -93,8 +93,11 @@ public:
      *  if overy == true,  |AD| = | m * p.x + b - p.y | * (1 /  sqrt(1 + pow(m, 2))) 
      *  if overy == false, |AD| = | p.x - m * p.y - b |
      */
-    bool IsSalient(const Types::Point p, const LineFitting fitinfo,  double threshold = 1);
+    bool IsSalient(const Types::Point &p, const LineFitting &fitinfo,  const double &threshold = 1)const;
+    
     std::vector<int>  FindSalientPoints(const Types::PointList &list, const int startindex = 0)const;
+    
+    
     /*
      *   Find direction between two points
      */
@@ -103,7 +106,7 @@ public:
 private:
     std::vector<Types::PointList> pointlist;
     
-    LineFitting FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy = true)const;
+    LineFitting FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy = true, const Types::BCalculation &bcalculation = BCalculation::MIN)const;
     
 };
 

@@ -94,5 +94,11 @@ TEST(FindSalientPoints, BasicAssertions) {
     EXPECT_EQ(expected2.size(), list2.size());
     for(int i = 0; i < list.size(); i++)
         EXPECT_EQ(expected2[i], list2[i]);
+}
+
+TEST(RemoveSalientPoints, BasicAssertions) {
+       Types::PointList testlist = {
+        {0, 1}, {1, 1}, {2, 1} , {3, 0}, {4, 0}, {5, 0}, {6, 1}, {7, 1}, {8, 1} 
+    };
     
 }

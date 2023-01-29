@@ -27,6 +27,11 @@ enum class Direction {
     SE = 8 // south east
 };
 
+enum class BCalculation {
+    MIN = 0,
+    MAX = 1
+};
+
 }
 
 #endif

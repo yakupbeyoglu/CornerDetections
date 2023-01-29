@@ -83,7 +83,7 @@ std::vector<int>  AdaptiveDetection::FindSalientPoints(const Types::PointList &l
             }
             else if(list[i].Y > list[i + 1].Y) {
                 step -=1;
-                
+
             }
             if(step !=0)
                 indexes.push_back(i+1);
@@ -94,7 +94,7 @@ std::vector<int>  AdaptiveDetection::FindSalientPoints(const Types::PointList &l
 }
 
 
-Types::PointList AdaptiveDetection::RemoveSalientPoints(const Types::PointList &list)const {
+Types::PointList AdaptiveDetection::RemoveSalientPoints(const Types::PointList &list, double threshold)const {
     Types::PointList filteredlist;
     size_t length = list.GetSize();
     if(length < 2)
@@ -112,15 +112,30 @@ Types::PointList AdaptiveDetection::RemoveSalientPoints(const Types::PointList &
             else if(list[i].Y > list[i + 1].Y) {
                 step -=1;
             }
-            
+
             if(step !=0)
                 indexes.push_back(i+1);
 
         } while(step != 0 && i < list.GetSize() - 2);
-        
+
         if(indexes.size() != 0) {
-                // TODO Angle calculation
+            Types::Point m = list[indexes.front() - 1];
+            Types::Point n = list[indexes.back() + 1];
+
+            // is it 0 - 90 degree or 0 - 90 and 90 - 180 ?
+            bool overy = (m.X  != n.X && m.Y != n.Y);
+
+            LineFitting fitline = FitLine(m, n, overy);
+
+            for(auto &index : indexes) {
+                bool issalient = IsSalient(list[index], fitline, threshold);
+                if(issalient) {
+                    filteredlist.Push(list[index]);
+                }
+            }
         }
+        else
+            filteredlist.Push(list[i]);
     }
     return filteredlist;
 }
@@ -157,20 +172,45 @@ Types::Direction AdaptiveDetection::FindDirection(const Types::Point &p1, const 
     return direction;
 }
 
+bool CornerDetections::AdaptiveDetection::IsSalient(const Types::Point& p, const CornerDetections::AdaptiveDetection::LineFitting & fitinfo, const double& threshold) const
+{
+    // |AD|
+    double ad;
+    if(fitinfo.overy)
+        ad = std::abs(fitinfo.slope * p.X + fitinfo.b - p.Y)  / std::sqrt(1 + pow(fitinfo.slope, 2));
+    else
+        ad = std::abs(p.X - fitinfo.slope * p.Y - fitinfo.b);
+    return ad < threshold;
+}
 
-AdaptiveDetection::LineFitting AdaptiveDetection::FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy)const {
+AdaptiveDetection::LineFitting AdaptiveDetection::FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy, const Types::BCalculation &calculation)const {
     double slope;
     double b;
+    double b1;
+    double b2;
     if(overy) {
-         slope = (p2.Y - p1.Y) / (p2.X - p1.X);
-         b = p2.Y - slope * p2.X;
-         
+        if(p2.X == p1.X)
+            slope = 0;
+        slope = (p2.Y - p1.Y) / (p2.X - p1.X);
+
+        b1 = p1.Y - slope * p1.X;
+        b2 = p2.Y - slope * p2.X;
     }
     else {
-         slope = (p2.X - p1.X) / (p2.Y - p1.Y);
-         b = p2.X - slope * p2.Y;
+        if(p2.Y == p1.Y)
+            slope = 0;
+        else
+            slope = (p2.X - p1.X) / (p2.Y - p1.Y);
+
+        b1 = p1.X - slope * p1.Y;
+        b2 = p2.X - slope * p2.Y;
     }
-    
+
+    if(calculation == Types::BCalculation::MIN)
+        b = b1 <= b2 ?  b1 : b2;
+    else
+        b = b1 > b2 ? b1 : b2;
+
     return {slope, b, overy};
 }
 }

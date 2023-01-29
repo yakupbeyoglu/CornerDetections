@@ -2,7 +2,23 @@
 #include <vector>
 
 #include "Processing/AdaptiveDetection.h"
+void show(const Types::PointList &list) {
+    for(auto &point : list) {
+        std::cout<<"{"<<point.X<<","<<point.Y<<"} ";
+    }
+    
+    std::cout<<std::endl;
+    
+}
+
 int main() {
+    Types::PointList list = {{3,0}, {4,0}, {5,1}};
+    show(list);
+    
+    list.Erase(0);
+    show(list);
+    
+    /*
     std::cout << "Hello World !" << std::endl;
     std::vector<Types::PointList> list = {};
     list.push_back({{3,5}});
@@ -23,6 +39,6 @@ int main() {
         {0, 1}, {1, 1}, {2, 1}, {3, 0}, {4, 0}, {5, 0}, {6, 1}, {7, 1}, {8, 1}
     };
     std::vector<int> expected = {3, 4, 5};
-    std::vector<int> nlist = adaptive.FindSalientPoints(testlist, 0);
+    std::vector<int> nlist = adaptive.FindSalientPoints(testlist, 0);*/
     return 0;
 }
