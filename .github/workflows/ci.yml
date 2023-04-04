@@ -4,6 +4,8 @@ on:
     branches-ignore:
       - "hotfix.*"
       - "wip.*"
+      - "main"
+      - "master"
 jobs:
   release:
     name: CI

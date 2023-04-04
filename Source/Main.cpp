@@ -12,7 +12,7 @@ void show(const Types::PointList &list) {
 }
 
 int main() {
-    Types::PointList list = {{3,0}, {4,0}, {5,1}};
+   Types::PointList list = {{3,0}, {4,0}, {5,1}};
     show(list);
     
     list.Erase(0);

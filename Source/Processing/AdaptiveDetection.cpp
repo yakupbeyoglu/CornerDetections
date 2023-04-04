@@ -125,7 +125,7 @@ Types::PointList AdaptiveDetection::RemoveSalientPoints(const Types::PointList &
             // is it 0 - 90 degree or 0 - 90 and 90 - 180 ?
             bool overy = (m.X  != n.X && m.Y != n.Y);
 
-            LineFitting fitline = FitLine(m, n, overy);
+            LineFitting fitline = FitLine(m, n, overy, Types::BCalculation::MAX);
 
             for(auto &index : indexes) {
                 bool issalient = IsSalient(list[index], fitline, threshold);

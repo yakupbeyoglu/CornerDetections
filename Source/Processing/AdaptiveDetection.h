@@ -106,7 +106,7 @@ public:
 private:
     std::vector<Types::PointList> pointlist;
     
-    LineFitting FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy = true, const Types::BCalculation &bcalculation = BCalculation::MIN)const;
+    LineFitting FitLine(const Types::Point &p1, const Types::Point &p2, const bool overy, const Types::BCalculation &bcalculation)const;
     
 };
 

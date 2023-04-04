@@ -13,12 +13,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/Bin)
 # Gorgon package required for image processing part
 find_package(Gorgon REQUIRED)
 
+# opencv  package
+find_package(OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
+
 add_compile_options(-std=c++17)
 
 add_executable(${PROJECT_NAME} 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Processing/AdaptiveDetection.cpp                            
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Processing/Ctar.h
+
 )
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS})
 
 linkgorgon(${PROJECT_NAME})
 

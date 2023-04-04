@@ -1,5 +1,5 @@
 set (Local
-    AdaptiveDetection.cpp
-    AdaptiveDetection.h
+  #  AdaptiveDetection.cpp
+  #  AdaptiveDetection.h
     CornerDetectors.h
 )
