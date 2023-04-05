@@ -6,6 +6,7 @@
 #include <Gorgon/Geometry/Point.h>
 #include <Gorgon/Geometry/Line.h>
 #include <Gorgon/Geometry/PointList.h>
+#include <opencv2/opencv.hpp>
 
 namespace Types {
 using Point = Gorgon::Geometry::Point;
@@ -13,6 +14,7 @@ using Pointf = Gorgon::Geometry::Pointf;
 using PointList = Gorgon::Geometry::PointList<Point>;
 using PointfList = Gorgon::Geometry::PointList<Pointf>;
 using PolygonMap = std::map<int, PointList>;
+using CvPointList = std::vector<cv::Point>;
 
 
 enum class Direction {

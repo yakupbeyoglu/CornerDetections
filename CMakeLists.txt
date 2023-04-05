@@ -22,7 +22,8 @@ add_compile_options(-std=c++17)
 
 add_executable(${PROJECT_NAME} 
     ${CMAKE_CURRENT_SOURCE_DIR}/Source/Main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Processing/Ctar.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/Processing/Ctar.hpp
+
 
 )
 
@@ -34,5 +35,9 @@ install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Source/)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests/)
 
-
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+)
 enable_testing()

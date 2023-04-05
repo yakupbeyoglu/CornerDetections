@@ -1,23 +1,34 @@
 #include <iostream>
 #include <vector>
-
-#include "Processing/AdaptiveDetection.h"
+#include "Processing/Ctar.hpp"
+#include "Processing/Common.h"
 void show(const Types::PointList &list) {
     for(auto &point : list) {
         std::cout<<"{"<<point.X<<","<<point.Y<<"} ";
     }
-    
+
     std::cout<<std::endl;
-    
+
 }
 
 int main() {
-   Types::PointList list = {{3,0}, {4,0}, {5,1}};
-    show(list);
+    std::vector<cv::Point> tjunctionlist = {{0,0}, {0,3}, {4,6}, {5,5}, {9,10}, {5,5}, {0,3}};
+    auto t_junctions = CornerDetections::Common::FindTJunctions(tjunctionlist);
+    std::cout << CornerDetections::Common::StreamPointList(t_junctions) << std::endl;
+    return 0;
+    cv::Mat image = cv::imread("/media/yakup/Samsung980/remote/EdgeDetections/Bin/ataturk.jpg");
+    assert(!image.empty());
     
-    list.Erase(0);
-    show(list);
+    auto contour = CornerDetections::Common::GetContour(image);
+    Types::CvPointList list;
+    cv::Mat detected;
+    std::tie(list, detected) = contour;
     
+    std::cout << "contours " << CornerDetections::Common::StreamPointList(list)<< std::endl;
+    auto pointed = CornerDetections::Common::DrawPoints(cv::Size(image.rows, image.cols), list);
+    CornerDetections::Ctar c(image);
+
+
     /*
     std::cout << "Hello World !" << std::endl;
     std::vector<Types::PointList> list = {};

@@ -73,8 +73,8 @@ public:
     /*
      *  Get Distnace Between two points
      */
-    virtual float GetDistance(const Types::Point &p1, const Types::Point &p2
-                             ) const override;
+    float GetDistance(const Types::Point &p1, const Types::Point &p2
+                             ) const;
                              
 
     /*
