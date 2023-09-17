@@ -3,20 +3,14 @@
 #include "../Types.h"
 
 namespace CornerDetections {
+
+template <typename T, class PointList>
 class CornerDetectors {
-public:
-    virtual ~CornerDetectors() {}
+  void PreProcess() { static_cast<T *>(this)->PreProcessing(); }
 
-    /*
-     *  Pre process will render the polygon list and prepeare to detect corners
-    */
-    virtual void PreProcess() = 0;
-
-    /*
-     *  Detect Corners from given list and return coordinate list
-    */
-    virtual Types::PointList DetectCorners(const Types::PointList &list) = 0;
+  PointList DetectCorners(const PointList &list) {
+    return static_cast<T *>(this)->CornerDetection();
+  }
 };
-
-}
+}  // namespace CornerDetections
 #endif

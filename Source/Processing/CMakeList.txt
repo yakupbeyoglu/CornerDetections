@@ -1,6 +1,4 @@
 set (Local
-  #  AdaptiveDetection.cpp
-  #  AdaptiveDetection.h
     CornerDetectors.h
     Ctar.hpp
     Common.h

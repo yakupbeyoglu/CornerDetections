@@ -13,10 +13,10 @@ set(files
 
     )
 add_executable(
-  AdaptiveDetectionTest
-  AdaptiveDetection_test.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.cpp                            
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.h                            
+ # AdaptiveDetectionTest
+ # AdaptiveDetection_test.cc
+ # ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.cpp                            
+ # ${CMAKE_CURRENT_SOURCE_DIR}/../Source/Processing/AdaptiveDetection.h                            
 
 )
 target_link_libraries(

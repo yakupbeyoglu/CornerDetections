@@ -39,3 +39,6 @@ Build/
 # Kdev files
 .kdev4/
 *.kdev4
+
+# Testing temporary files ignores
+Testing/Temporary/
