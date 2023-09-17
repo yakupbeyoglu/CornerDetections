@@ -18,11 +18,11 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
 
   ~Ctar() {}
 
-  virtual void PreProcessing() {
+  void PreProcessing() {
     std::tie(contours, edges) = Common::GetContour(image);
   }
 
-  virtual Types::CvPointList CornerDetection(const Types::CvPointList &list) {
+  Types::CvPointList CornerDetection(const Types::CvPointList &list) {
     Types::CvPointList response;
     // Corner map incldue index of the corners for iterating indexes
     Types::PointMap<cv::Point> corner_map;
