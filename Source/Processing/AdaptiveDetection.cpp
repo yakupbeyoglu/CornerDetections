@@ -47,9 +47,7 @@ float AdaptiveDetection::GetAdaptiveTh(
   // filter nonzero elements
   std::vector<float> nonzero;
   std::copy_if(sharpness.begin(), sharpness.end(), std::back_inserter(nonzero),
-               [](float sharp) {
-                 return sharp != 0;
-               });
+               [](float sharp) { return sharp != 0; });
 
   if (nonzero.size() == 0) return 0;
   // return mean of nonzero

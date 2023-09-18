@@ -17,10 +17,13 @@ struct IsSupportedPoint : std::disjunction<std::is_same<T_, cv::Point>> {};
 template <class T_>
 struct PointMap {
   static_assert(IsSupportedPoint<T_>::value,
-                "T_ must be cv::Point or Yakup::Point");
-  int index;
+                "T_ must be cv::Point");
+  std::size_t index;
   T_ point;
 };
+
+template <class T_>
+using PointMapList = std::vector<PointMap<T_>>;
 
 enum class Direction {
   SAME = 0,  // No change

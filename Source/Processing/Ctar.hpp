@@ -2,6 +2,7 @@
 #define CTAR_H_
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "Common.h"
 #include "CornerDetectors.h"
@@ -25,15 +26,18 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
   Types::CvPointList CornerDetection(const Types::CvPointList &list) {
     Types::CvPointList response;
     // Corner map incldue index of the corners for iterating indexes
-    Types::PointMap<cv::Point> corner_map;
-    for (auto &point_list : list) {
+    std::vector<Types::PointMap<cv::Point>> corner_map;
+    for (std::size_t index = 0; index < list.size(); ++index) {
+      if (IsCurve(index, list)) corner_map.push_back({index, list[index]});
     }
     return response;
   }
 
  private:
-  bool isCurve(int index, int contour_index) {
-    auto distances = GetDistances(index, contour_index);
+  bool IsCurve(std::size_t index, const Types::CvPointList &contour) {
+    if (index >= contour.size())
+      throw std::out_of_range("index is more than contour size !");
+    auto distances = GetDistances(index, contour);
     auto ratio = GetRatio(distances);
     return ratio <= threshold;
   }
@@ -46,8 +50,11 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
     return ratio;
   }
 
-  std::tuple<float, float, float> GetDistances(int index,
-                                               int contour_index) const {
+  std::tuple<float, float, float> GetDistances(
+      std::size_t index, const Types::CvPointList &contour) const {
+    if (index >= contour.size())
+      throw std::out_of_range("index is more than contour size !");
+
     auto eucledian = [](cv::Point p1, cv::Point p2) {
       int dx = p2.x - p1.x;
       int dy = p2.y - p1.y;
@@ -55,17 +62,15 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
     };
 
     // origin
-    cv::Point p0 = contours[contour_index][index];
+    cv::Point p0 = contour[index];
 
     int n_index = (index - k) <= 0 ? 0 : (index - k);
     // backward
-    cv::Point p1 = contours[contour_index][n_index];
+    cv::Point p1 = contour[n_index];
 
-    n_index = (index + k) >= contours[contour_index].size()
-                  ? contours[contour_index].size() - 1
-                  : index + k;
+    n_index = (index + k) >= contour.size() ? contour.size() - 1 : index + k;
 
-    cv::Point p2 = contours[contour_index][n_index];
+    cv::Point p2 = contour[n_index];
 
     float d1 = eucledian(p1, p2);
     float d2 = eucledian(p0, p1);

@@ -16,7 +16,7 @@ void show(const Types::CvPointList &list) {
 int main() {
   std::vector<cv::Point> tjunctionlist = {{0, 0},  {0, 3}, {4, 6}, {5, 5},
                                           {9, 10}, {5, 5}, {0, 3}};
-  auto t_junctions = CornerDetections::Common::FindTJunctions(tjunctionlist);
+  auto t_junctions = CornerDetections::Common::FindTJunctions<Types::CvPointList>(tjunctionlist);
   std::cout << CornerDetections::Common::StreamPointList(t_junctions)
             << std::endl;
   cv::Mat image = cv::imread(
@@ -33,7 +33,7 @@ int main() {
     cv::Scalar color = cv::Scalar(rng.uniform(0, 256), rng.uniform(0, 256),
                                   rng.uniform(0, 256));
     cv::drawContours(drawing, contours, (int)index, color, 1, cv::LINE_8);
-    auto t_junctions = CornerDetections::Common::FindTJunctions(contour);
+    auto t_junctions = CornerDetections::Common::FindTJunctions<Types::CvPointList>(contour);
     std::cout << "TJUNCTION"
               << CornerDetections::Common::StreamPointList(t_junctions)
               << std::endl;

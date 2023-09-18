@@ -1,5 +1,6 @@
 #ifndef COMMON_H_
 #define COMMON_H_
+#include <algorithm>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <sstream>
@@ -87,6 +88,10 @@ cv::Mat PointOnImage(const cv::Mat &image, const Types::CvPointList &list,
   return output;
 }
 
+/// TJunction function forward initialize
+template <typename T, typename PList>
+T FindTJunctions(const PList &list);
+template <>
 Types::CvPointList FindTJunctions(const Types::CvPointList &list) {
   auto isequal = [](cv::Point p1, cv::Point p2) {
     return p1.x == p2.x && p1.y == p2.y;
@@ -125,6 +130,85 @@ Types::CvPointList FindTJunctions(const Types::CvPointList &list) {
     }
   }
   return tjunctions;
+}
+
+template <>
+Types::PointMapList<cv::Point> FindTJunctions(const Types::CvPointList &list) {
+  auto isequal = [](cv::Point p1, cv::Point p2) {
+    return p1.x == p2.x && p1.y == p2.y;
+  };
+
+  Types::PointMapList<cv::Point> tjunctions;
+  // sure that its ordered
+
+  Types::CvPointList endpoints;
+
+  // create start and end point for each
+  for (std::size_t point = 0; point < list.size() - 1; ++point) {
+    endpoints.push_back(list[point]);
+    endpoints.push_back(list[point + 1]);
+  }
+
+  for (std::size_t point_index = 0; point_index < endpoints.size();
+       ++point_index) {
+    const auto &point = endpoints[point_index];
+    std::size_t count = 0;
+    for (std::size_t i = 0; i < list.size() - 1; ++i) {
+      if (isequal(list[i], point) || isequal(list[i + 1], point)) ++count;
+    }
+
+    auto find_condition = [&point](const Types::PointMap<cv::Point> &p) {
+      return point ==
+             p.point;  // Assuming p has a 'point' member of type cv::Point
+    };
+
+    if (count > 1) {
+      int segmentcounter = 0;
+      // check if point cross at least three line segment
+      for (std::size_t i = 0; i < list.size() - 1; ++i) {
+        if (isequal(list[i], point) || isequal(list[i + 1], point)) {
+          if (++segmentcounter > 2) {
+            if (std::find_if(std::begin(tjunctions), std::end(tjunctions),
+                             find_condition) == std::end(tjunctions))
+              tjunctions.push_back({point_index, point});
+            break;
+          }
+        }
+      }
+    }
+  }
+  return tjunctions;
+}
+
+template <typename T>
+Types::PointMapList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
+                                      const Types::PointMapList<T> &list_2) {
+  Types::PointMapList<T> sorted_list;
+  std::size_t i = 0;
+  std::size_t j = 0;
+  // Merge two list
+  while (i < list_1.size() && j < list_2.size()) {
+    if (list_1[i] < list_2[j]) {
+      sorted_list.push_back(list_1[i]);
+      ++i;
+    } else {
+      sorted_list.push_back(list_2[j]);
+      ++j;
+    }
+  }
+
+  // Append remaining elements
+
+  auto append_remanings = [&sorted_list](const Types::PointMapList<T> &list,
+                                         std::size_t &index) {
+    for (; index < list.size(); ++index) {
+      sorted_list.push_back(list[index]);
+    }
+  };
+
+  append_remanings(list_1, i);
+  append_remanings(list_2, j);
+  return sorted_list;
 }
 
 }  // namespace CornerDetections::Common
