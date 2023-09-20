@@ -16,8 +16,7 @@ struct IsSupportedPoint : std::disjunction<std::is_same<T_, cv::Point>> {};
 
 template <class T_>
 struct PointMap {
-  static_assert(IsSupportedPoint<T_>::value,
-                "T_ must be cv::Point");
+  static_assert(IsSupportedPoint<T_>::value, "T_ must be cv::Point");
   std::size_t index;
   T_ point;
 };

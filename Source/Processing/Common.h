@@ -182,7 +182,7 @@ Types::PointMapList<cv::Point> FindTJunctions(const Types::CvPointList &list) {
 
 template <typename T>
 Types::PointList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
-                                      const Types::PointMapList<T> &list_2) {
+                                   const Types::PointMapList<T> &list_2) {
   Types::PointList<T> sorted_list;
   std::size_t i = 0;
   std::size_t j = 0;
@@ -212,10 +212,11 @@ Types::PointList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
 }
 
 // Check data is in window or not
-bool IsWithinWindow(const cv::Point &target, const cv::Point &center, const int &window_size) {
-    int size = window_size / 2;
-    return (target.x >= center.x - size && target.x <= center.x + size &&
-        target.y >= center.y - size && target.y <= center.y + size);
+bool IsWithinWindow(const cv::Point &target, const cv::Point &center,
+                    const int &window_size) {
+  int size = window_size / 2;
+  return (target.x >= center.x - size && target.x <= center.x + size &&
+          target.y >= center.y - size && target.y <= center.y + size);
 }
 
 }  // namespace CornerDetections::Common
