@@ -181,18 +181,18 @@ Types::PointMapList<cv::Point> FindTJunctions(const Types::CvPointList &list) {
 }
 
 template <typename T>
-Types::PointMapList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
+Types::PointList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
                                       const Types::PointMapList<T> &list_2) {
-  Types::PointMapList<T> sorted_list;
+  Types::PointList<T> sorted_list;
   std::size_t i = 0;
   std::size_t j = 0;
   // Merge two list
   while (i < list_1.size() && j < list_2.size()) {
-    if (list_1[i] < list_2[j]) {
-      sorted_list.push_back(list_1[i]);
+    if (list_1[i].index < list_2[j].index) {
+      sorted_list.emplace_back(std::move(list_1[i].point));
       ++i;
     } else {
-      sorted_list.push_back(list_2[j]);
+      sorted_list.emplace_back(std::move(list_2[j].point));
       ++j;
     }
   }
@@ -202,13 +202,20 @@ Types::PointMapList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
   auto append_remanings = [&sorted_list](const Types::PointMapList<T> &list,
                                          std::size_t &index) {
     for (; index < list.size(); ++index) {
-      sorted_list.push_back(list[index]);
+      sorted_list.emplace_back(std::move(list[index].point));
     }
   };
 
   append_remanings(list_1, i);
   append_remanings(list_2, j);
   return sorted_list;
+}
+
+// Check data is in window or not
+bool IsWithinWindow(const cv::Point &target, const cv::Point &center, const int &window_size) {
+    int size = window_size / 2;
+    return (target.x >= center.x - size && target.x <= center.x + size &&
+        target.y >= center.y - size && target.y <= center.y + size);
 }
 
 }  // namespace CornerDetections::Common

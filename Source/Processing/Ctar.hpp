@@ -3,7 +3,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
-
+#include <algorithm>
 #include "Common.h"
 #include "CornerDetectors.h"
 
@@ -25,15 +25,34 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
 
   Types::CvPointList CornerDetection(const Types::CvPointList &list) {
     Types::CvPointList response;
+    auto tjunctions = Common::FindTJunctions<Types::PointMapList<cv::Point>>(list);
     // Corner map incldue index of the corners for iterating indexes
     std::vector<Types::PointMap<cv::Point>> corner_map;
     for (std::size_t index = 0; index < list.size(); ++index) {
       if (IsCurve(index, list)) corner_map.push_back({index, list[index]});
     }
+
+    // Filter tjunctions
+    Types::PointMapList<cv::Point> filter_tjunction;
+    std::for_each(std::begin(tjunctions), std::end(tjunctions), [&](auto &tjunction) {
+        bool is_in_window = false;
+
+        for(const auto &corner:corner_map)
+            is_in_window |= Common::IsWithinWindow(tjunction.point, corner.point, 5);
+
+        if(!is_in_window)
+            filter_tjunction.emplace_back(std::move(tjunction));
+    });
+
+    Types::PointList<cv::Point> merged_points =
+    Common::MergePointMaps(corner_map, filter_tjunction);
+
+
     return response;
   }
 
  private:
+
   bool IsCurve(std::size_t index, const Types::CvPointList &contour) {
     if (index >= contour.size())
       throw std::out_of_range("index is more than contour size !");

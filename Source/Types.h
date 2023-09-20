@@ -23,6 +23,9 @@ struct PointMap {
 };
 
 template <class T_>
+using PointList = std::vector<T_>;
+
+template <class T_>
 using PointMapList = std::vector<PointMap<T_>>;
 
 enum class Direction {
