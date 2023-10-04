@@ -14,20 +14,22 @@ namespace CornerDetections::Common {
  *
  */
 
-std::tuple<Types::CvContours, cv::Mat> GetContour(cv::Mat &image,
-                                                  std::size_t filter = 0,
-                                                  std::size_t threshold = 0) {
+std::tuple<Types::CvContours, cv::Mat> GetContour(
+    cv::Mat &image, std::size_t filter = 0, std::size_t low_threshold = 200,
+    std::size_t high_threshold = 255, bool smooth = true) {
   // Convert image to grayscale
   cv::Mat grayscale;
   cv::cvtColor(image, grayscale, cv::COLOR_RGB2GRAY);
 
   // Ctar Accept as 3,3 and sigma value = 3
-  cv::Mat blured;
-  cv::GaussianBlur(grayscale, blured, cv::Size(3, 3), 3);
 
   // Do canny Edge Detection
-  cv::Mat edges;
-  cv::Canny(blured, edges, 250, 255);
+  cv::Mat edges = grayscale.clone();
+  if (smooth) {
+    cv::GaussianBlur(edges, edges, cv::Size(3, 3), 3);
+  }
+  cv::Canny(edges, edges, low_threshold, high_threshold);
+  imwrite("edges.png", edges);
 
   // Collect coordinatest to point list
   Types::CvContours contours;

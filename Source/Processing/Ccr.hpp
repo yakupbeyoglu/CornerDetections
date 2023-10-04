@@ -8,12 +8,13 @@
 namespace CornerDetections {
 class Ccr : public CornerDetectors<Ccr, Types::CvPointList> {
  public:
-  Ccr(std::Size_t k = 7, unsigned float threshold = 0.986)
-      : k(k), threshold(threshold) {}
+  Ccr(std::size_t k = 7, float threshold = 0.986) : k(k), threshold(threshold) {
+    assert(threshold > 0);
+  }
 
   ~Ccr() {}
 
-  Types::CvPointList DetectCorner(const Types::CvPointList &contour) {
+  Types::CvPointList CornerDetection(const Types::CvPointList &contour) {
     Types::CvPointList corners;
     vector<double> curvature_values;
 
@@ -22,14 +23,15 @@ class Ccr : public CornerDetectors<Ccr, Types::CvPointList> {
       return cv::norm(p1 - p2);
     };
 
+    Types::CvPointList detected_corners;
     for (std::size_t i = k; i < contour.size() - k - 1; ++i) {
-            double distance = cv::norm(contour[i - k] - contour(i  + k]);
-            double total = 0;
-            for(int j = i - k; j < i + k  - 1; j++)
-                    total += eucledian_distance(contour[i], contour[i+1]);
+      double distance = cv::norm(contour[i - k] - contour[i + k]);
+      double total = 0;
+      for (int j = i - k; j < i + k - 1; j++)
+        total += eucledian_distance(contour[i], contour[i + 1]);
 
-            double distance_ratio = distance / total;
-            curvature_values.emplace_back(distance_ratio);
+      double distance_ratio = distance / total;
+      curvature_values.emplace_back(distance_ratio);
     }
 
     for (std::size_t i = 0; i < curvature_values.size(); ++i) {
@@ -49,5 +51,6 @@ class Ccr : public CornerDetectors<Ccr, Types::CvPointList> {
  private:
   std::size_t k;
   float threshold;
-}
+};
 }  // namespace CornerDetections
+#endif
