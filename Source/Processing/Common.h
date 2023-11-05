@@ -221,6 +221,26 @@ bool IsWithinWindow(const cv::Point &target, const cv::Point &center,
           target.y >= center.y - size && target.y <= center.y + size);
 }
 
+///  Calculate k cosine value
+template <typename P>
+double CalculateKCosine(const P &a, const P &b);
+
+template<>
+double CalculateKCosine(const cv::Point &a, const cv::Point &b) {
+    double norm_a = std::sqrt(a.x  * a.x + a.y * a.y);
+    double norm_b = std::sqrt(b.x * b.x + b.y * b.y);
+    double cosine = (a.x * b.x + a.y * b.y) / (norm_a * norm_b);
+    return cosine;
+}
+
+/// Calculate Eucledian Distance
+template <typename P>
+double EucledianDistance(const P &p1, const P &p2);
+
+template<>
+double EucledianDistance (const cv::Point &p1, const cv::Point &p2) {
+  return std::sqrt(std::pow(p2.x - p1.x, 2) + std::pow(p2.y - p1.y, 2));
+}
 }  // namespace CornerDetections::Common
 
 #endif

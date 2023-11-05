@@ -2,4 +2,5 @@ set (Local
     CornerDetectors.h
     Ctar.hpp
     Common.h
+    RjDetector.hpp
 )
