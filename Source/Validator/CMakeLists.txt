@@ -1,3 +1,4 @@
 set (Local
-    Polygon.h
+    PolygonDataset.hpp
+    Parser.hpp
 )

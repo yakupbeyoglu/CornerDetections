@@ -12,7 +12,7 @@ class Parser {
   T_ Parse(const std::string &file_path) {
     if (!std::filesystem::exists(file_path))
       throw std::runtime_error("Given file path does not exists!");
-    return static_cast<P_ *>(this)->Parse();
+    return static_cast<P_ *>(this)->Parse(file_path);
   }
 };
 
@@ -42,10 +42,10 @@ class CsvToPolyList
             id = int_value;
             break;
           case 1:
-            point.X = int_value;
+            point.x = int_value;
             break;
           case 2:
-            point.Y = int_value;
+            point.y = int_value;
             break;
           default:
             throw std::runtime_error("Parsing Error !");

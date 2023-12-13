@@ -5,22 +5,22 @@
 
 namespace Types {
 template <class P_ = Validator::CsvToPolyList<cv::Point>>
-class PolygonDataSet {
+class PolygonDataset {
  public:
-  PolygonDataSet(const std::string &file_path) : file_path(file_path) {
-    maps = std::move(parser.Parse(file_path));
+  PolygonDataset(const std::string &file_path) : file_path(file_path) {
+    maps = parser.Parse(file_path);
   }
 
-  PolygonDataSet(const PolygonDataSet &other)
+  PolygonDataset(const PolygonDataset &other)
       : file_path(other.file_path), maps(other.maps) {}
 
-  PolygonDataSet &operator=(PolygonDataSet other) {
+  PolygonDataset &operator=(PolygonDataset other) {
     swap(*this, other);
     return *this;
   }
 
   // move constructor
-  PolygonDataSet(PolygonDataSet &&other) {
+  PolygonDataset(PolygonDataset &&other) {
     file_path = std::move(other.file_path);
     other.file_path.clear();
 
@@ -28,7 +28,7 @@ class PolygonDataSet {
     other.maps.clear();
   }
 
-  PolygonDataSet &operator=(PolygonDataSet &&other) {
+  PolygonDataset &operator=(PolygonDataset &&other) {
     file_path = std::move(other.file_path);
     other.file_path.clear();
 
@@ -39,7 +39,23 @@ class PolygonDataSet {
 
   const Types::PolygonMap &GetPolygons() const { return maps; }
 
-  friend void swap(PolygonDataSet &first, PolygonDataSet &second) {
+  friend std::ostream &operator<<(std::ostream &os, PolygonDataset &dataset) {
+    for (auto it = dataset.maps.begin(); it != dataset.maps.end(); ++it) {
+      std::stringstream line;
+      line << "Polygon-" << it->first << "\t";
+      for (auto point = it->second.begin(); point != it->second.end();
+           ++point) {
+        if (point != it->second.begin() && std::next(point) != it->second.end())
+          line << ",";
+        line << "{" << point->x << "," << point->y << "}";
+      }
+
+      os << line.str() << std::endl;
+    }
+    return os;
+  }
+
+  friend void swap(PolygonDataset &first, PolygonDataset &second) {
     using std::swap;
     std::swap(first.file_path, second.file_path);
     std::swap(first.maps, second.maps);
