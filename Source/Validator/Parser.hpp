@@ -5,6 +5,18 @@
 #include <string>
 
 #include "../Types.h"
+/**
+ * @file Parser.hpp
+ * @brief Parsers
+ * Including several parser using crtp pattern to achive more than one
+ * polymorphic parsing operations Currently we only support CsvToPolyList which
+ * is converting csv to polygon list
+ *
+ * @author Yakup Beyoglu
+ * @date December 13, 2023
+ * @see https://github.com/yakupbeyoglu
+ */
+
 namespace Validator {
 template <class T_, class P_>
 class Parser {

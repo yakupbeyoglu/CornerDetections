@@ -3,8 +3,20 @@
 #include "../Types.h"
 #include "Parser.hpp"
 
+/**
+ * @file PolygonDataset.hpp
+ * @brief PolygonDataset
+ * PolygonDataset is basically parsing given file dataset path using the
+ * specified Parser The parser is basically parse polygon_id,x,y value to
+ * map<polygon_id,vector<Point>>
+ *
+ * @author Yakup Beyoglu
+ * @date December 13, 2023
+ * @see https://github.com/yakupbeyoglu
+ */
+
 namespace Types {
-template <class P_ = Validator::CsvToPolyList<cv::Point>>
+template <class Parser_ = Validator::CsvToPolyList<cv::Point>>
 class PolygonDataset {
  public:
   PolygonDataset(const std::string &file_path) : file_path(file_path) {
@@ -64,7 +76,7 @@ class PolygonDataset {
  private:
   std::string file_path;
   Types::PolygonMap maps;
-  Validator::Parser<Types::PolygonMap, P_> parser;
+  Validator::Parser<Types::PolygonMap, Parser_> parser;
 };
 
 }  // namespace Types
