@@ -11,53 +11,74 @@ namespace CornerDetections {
 
 class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
  public:
-  Ctar(std::size_t k = 7, float threshold = 0.989)
-      : k(k), threshold(threshold) {
+
+  Ctar(std::size_t k = 7, float threshold = 0.989, bool t_junction = false)
+      : k(k), threshold(threshold), t_junction(t_junction) {
     assert(threshold > 0);
   }
 
   ~Ctar() {}
 
-  Types::CvPointList CornerDetection(const Types::CvPointList &list) {
+  Types::CvPointList CornerDetection(const Types::CvPointList &list, bool use_tjunction = false) {
     Types::CvPointList response;
 
-    // Find Tjunctions
-    auto tjunctions =
-        Common::FindTJunctions<Types::PointMapList<cv::Point>>(list);
+
+    Types::CvPointList smoothed_list = CornerDetections::Common::GausianSmooth(list, 3);
 
     // Corner map incldue index of the corners for iterating indexes
     std::vector<Types::PointMap<cv::Point>> corner_map;
     for (std::size_t index = k; index < list.size(); ++index) {
-      if (IsCurve(index, list)) corner_map.push_back({index, list[index]});
+      auto [is_curve, value] = IsCurve(index, smoothed_list);
+      if (is_curve) corner_map.push_back({index, value, smoothed_list[index]});
     }
 
-    // Filter tjunctions
-    Types::PointMapList<cv::Point> filter_tjunction;
-    std::for_each(
-        std::begin(tjunctions), std::end(tjunctions), [&](auto &tjunction) {
-          bool is_in_window = false;
+    Types::PointMapList<cv::Point> non_max;
 
-          for (const auto &corner : corner_map)
-            is_in_window |=
-                Common::IsWithinWindow(tjunction.point, corner.point, 5);
+    // local minima
+    for (std::size_t i = 0; i < corner_map.size(); ++i) {
+          if (corner_map[i].curvature_value <= corner_map[i - 1].curvature_value &&
+                corner_map[i].curvature_value <= corner_map[i + 1].curvature_value) {
+                non_max.push_back(corner_map[i]);
+            }
+    }
 
-          if (!is_in_window)
-            filter_tjunction.emplace_back(std::move(tjunction));
-        });
+    Types::PointMapList<cv::Point> tjunctions;
+    Types::PointList<cv::Point> merged_points;
+    if(use_tjunction) {
+       // Find Tjunctions
+       tjunctions =
+          Common::FindTJunctions<Types::PointMapList<cv::Point>>(smoothed_list);
+      // Filter tjunctions
+      Types::PointMapList<cv::Point> filter_tjunction;
+      std::for_each(
+          std::begin(tjunctions), std::end(tjunctions), [&](auto &tjunction) {
+            bool is_in_window = false;
 
-    Types::PointList<cv::Point> merged_points =
-        Common::MergePointMaps(corner_map, filter_tjunction);
+            for (const auto &corner : corner_map)
+              is_in_window |=
+                  Common::IsWithinWindow(tjunction.point, corner.point, 5);
+
+            if (!is_in_window && !tjunction.added) {
+              tjunction.added = true;
+              filter_tjunction.emplace_back(std::move(tjunction));
+            }
+          });
+
+
+          merged_points = Common::MergePointMaps(non_max, filter_tjunction);
+      // todo imPLEMENT LOCAL MINIMA
+    }
 
     return merged_points;
   }
 
  private:
-  bool IsCurve(std::size_t index, const Types::CvPointList &contour) {
+  std::tuple<bool, float> IsCurve(std::size_t index, const Types::CvPointList &contour) {
     if (index >= contour.size())
       throw std::out_of_range("index is more than contour size !");
     auto distances = GetDistances(index, contour);
     auto ratio = GetRatio(distances);
-    return ratio <= threshold;
+    return std::make_tuple(ratio <= threshold, ratio);
   }
 
   float GetRatio(const std::tuple<float, float, float> &distances) const {
@@ -99,6 +120,7 @@ class Ctar : public CornerDetectors<Ctar, Types::CvPointList> {
   Types::CvContours contours;
   int k;
   float threshold;
+  bool t_junction;
 };
 
 }  // namespace CornerDetections

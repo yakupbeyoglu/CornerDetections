@@ -11,9 +11,10 @@ public:
     struct CandidatePoint{
         double curvature_value;
         std::size_t index;
-    }
+        cv::Point p;
+    };
     using CandidateList = std::vector<CandidatePoint>;
-    Most(const std::size_t &l =4, const double &th = 0.8):l(l),th(th){
+    Most(const std::size_t &l =5, const double &th = 0.8):l(l),th(th){
         assert(th  > 0);
     }
 
@@ -26,8 +27,8 @@ public:
     Most &operator = (Most &&) = delete;
 
     Types::CvPointList CornerDetection(const Types::CvPointList &contour) {
-        Types::CvPointList corners;
-
+        CandidateList list = GetCandidates(contour);
+        return NonMaximumSuppression(std::move(list), th);
     }
 
 
@@ -37,48 +38,44 @@ private:
     CandidateList GetCandidates(const Types::CvPointList &contour) {
         CandidateList candidates;
         // Find curvatures
-        for(int i=1; i < contour.size() - 1; ++i) {
+        for(std::size_t i=0; i < contour.size(); ++i) {
             // Formulate (7) to receive t value to find subpixels
             std::size_t t = GetT(contour, i);
 
             // Cycle indexes if out of bounds
-            int bw_index = (i - t + contour.size()) % contour.size();
-            int bw_index_1 = (i - t - 1 + contour.size()) % contour.size();
-            int fw_index = (i + t + contour.size()) % contour.size();
-            int fw_index_1 = (i + t + 1 + contour.size()) % contour.size();
+            std::size_t bw_index = (i - t + contour.size()) % contour.size();
+            std::size_t bw_index_1 = (i - t - 1 + contour.size()) % contour.size();
+            std::size_t fw_index = (i + t + contour.size()) % contour.size();
+            std::size_t fw_index_1 = (i + t + 1 + contour.size()) % contour.size();
 
 
-            // Forward point for subpixelized triangle
-            const cv::Point &pi = contour[i];
-            const cv::Point &p_B = contour[bw_index];
-            const cv::Point &p_f = contour[fw_index];
 
             double arc_len_1 = GetArcLength(contour, i, fw_index);
             double arc_len_2 = GetArcLength(contour, i, fw_index_1) ;
             double lf = (l - arc_len_1) / ((arc_len_2 - l) == 0 ? 1 : (arc_len_2 - l));
 
-            arc_len_1 = arcLength(contour, bw_index, index);
-            arc_len_2 = arcLength(contour, bw_index_1, index);
+            arc_len_1 = GetArcLength(contour, bw_index, i);
+            arc_len_2 = GetArcLength(contour, bw_index_1, i);
             double lb = (l - arc_len_1) / ((arc_len_2 - l) == 0 ? 1 : (arc_len_2 - l));
 
             int division = (1+lf) == 0 ? 1 : 1 + lf;
             cv::Point forward_point = {
-                std::round(std::abs((contour[fw_index].x + lf * contour[fw_index_1].x) / division)),
-                std::round(std::abs((contour[fw_index].y + lf * contour[fw_index_1].y) / division))
-            }
+                static_cast<int>(std::round(((contour[fw_index].x + lf * contour[fw_index_1].x) / division))),
+                static_cast<int>(std::round(((contour[fw_index].y + lf * contour[fw_index_1].y) / division)))
+            };
 
             division = (1 + lb) == 0 ? 1 : 1 + lb;
             cv::Point backward_point = {
-                std::round(std::abs((contour[bw_index].x + lb * contour[bw_index_1].x) / division)),
-                std::round(std::abs((contour[fw_index].y + lb * contour[fw_index_1].y) / division))
-            }
+                static_cast<int>(std::round(((contour[bw_index].x + lb * contour[bw_index_1].x) / division))),
+                static_cast<int>(std::round(((contour[fw_index].y + lb * contour[fw_index_1].y) / division)))
+            };
 
-            cv::Point current_point = contour[index];
+            cv::Point current_point = contour[i];
             double curvature_value = DiscreteCurvatureComputation(current_point, backward_point, forward_point);
-            candidates.emplace_back({curvature_value, index});
+            candidates.push_back({curvature_value, i, current_point});
         }
 
-
+        return candidates;
     }
 
     /*
@@ -112,35 +109,27 @@ private:
         return cv::norm(pici);
     }
 
-    CandidateList NonMaximumSuppression(const CandidateList& candidates, double threshold) {
-        CandidateList result;
+    Types::CvPointList NonMaximumSuppression(const CandidateList& candidates, double threshold, int n = 3) {
+        Types::CvPointList result;
 
-        if (candidates.size() < 3) {
-            // If there are fewer than 3 points, non-maximum suppression is not meaningful
-            return candidates;
-        }
 
-        // Handle the first point separately
-        if (candidates.front().curvature_value >= threshold &&candidates.front().curvature_value > candidates[1].curvature_value) {
-            result.push_back(candidates.front());
-        }
+    for (std::size_t i = 0; i < candidates.size(); ++i) {
+        bool isLocalMaxima = true;
 
-        // Iterate through the middle points
-        for (size_t i = 1; i < candidates.size() - 1; ++i) {
-            // Check if the current curvature value is greater than both neighbors
-            if (candidates[i].curvature_value >= threshold && candidates[i].curvature_value > candidates[i - 1].curvature_value &&
-                candidates[i].curvature_value > candidates[i + 1].curvature_value) {
-                result.push_back(candidates[i]);
+        // Check against neighbors
+        for (std::size_t j = i - n; j <= i + n; ++j) {
+            if (j != i && j < candidates.size() && candidates[i].curvature_value <= candidates[j].curvature_value && candidates[i].curvature_value > threshold) {
+                isLocalMaxima = false;
+                break;
             }
         }
 
-        // Handle the last point separately
-        if (candidates.back().curvature_value >= threshold && candidates.back().curvature_value > candidates[candidates.size() - 2].curvature_value && candidates.back().curvature_value > threshold) {
-            result.push_back(candidates.back());
-        } else if (candidates.back().curvature_value > candidates[candidates.size() - 2].curvature_value) {
-            // Correct the condition to check if the last point is a local maximum
-            result.push_back(candidates.back());
+        if (isLocalMaxima) {
+            result.push_back(candidates[i].p);
         }
+    }
+
+
 
         return result;
     }
@@ -149,6 +138,7 @@ private:
     double th;
 
 };
+}
 
 
 #endif

@@ -2,5 +2,6 @@ set (Local
     CornerDetectors.h
     Ctar.hpp
     Common.h
-    RjDetector.hpp
+    Most.hpp
+    Bezier.hpp
 )

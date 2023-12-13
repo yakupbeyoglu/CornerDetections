@@ -18,7 +18,9 @@ template <class T_>
 struct PointMap {
   static_assert(IsSupportedPoint<T_>::value, "T_ must be cv::Point");
   std::size_t index;
+  double curvature_value;
   T_ point;
+  bool added = false;
 };
 
 template <class T_>

@@ -4,7 +4,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include <sstream>
-
+#include <math.h>
 #include "../Types.h"
 
 namespace CornerDetections::Common {
@@ -16,27 +16,33 @@ namespace CornerDetections::Common {
 
 std::tuple<Types::CvContours, cv::Mat> GetContour(
     cv::Mat &image, std::size_t filter = 0, std::size_t low_threshold = 200,
-    std::size_t high_threshold = 255, bool smooth = true) {
-  // Convert image to grayscale
-  cv::Mat grayscale;
-  cv::cvtColor(image, grayscale, cv::COLOR_RGB2GRAY);
+    std::size_t high_threshold = 255, bool smooth = false) {
+
 
   // Ctar Accept as 3,3 and sigma value = 3
 
-  // Do canny Edge Detection
-  cv::Mat edges = grayscale.clone();
+  cv::Mat blur = image.clone();
   if (smooth) {
-    cv::GaussianBlur(edges, edges, cv::Size(3, 3), 3);
+    cv::GaussianBlur(image, blur, cv::Size(3, 3), 1.5);
   }
-  cv::Canny(edges, edges, low_threshold, high_threshold);
+
+    // Convert image to grayscale
+  cv::Mat grayscale;
+  cv::Mat edges;
+  cv::Canny(blur, edges, low_threshold, high_threshold);
   imwrite("edges.png", edges);
 
   // Collect coordinatest to point list
   Types::CvContours contours;
   std::vector<cv::Vec4i> hierarchy;
 
-  cv::findContours(edges, contours, hierarchy, cv::RETR_EXTERNAL,
+  cv::findContours(edges, contours, cv::RETR_LIST,
                    cv::CHAIN_APPROX_NONE);
+    cv::Mat image5(800, 800, CV_8UC3, cv::Scalar(0, 0, 0));
+
+
+  cv::polylines(image5, contours, false, cv::Scalar(0,0, 255), 1);
+  imwrite("contour_im.png", image5);
   // filter small polygons
   if (filter > 0) {
     std::remove_if(
@@ -172,7 +178,7 @@ Types::PointMapList<cv::Point> FindTJunctions(const Types::CvPointList &list) {
           if (++segmentcounter > 2) {
             if (std::find_if(std::begin(tjunctions), std::end(tjunctions),
                              find_condition) == std::end(tjunctions))
-              tjunctions.push_back({point_index, point});
+              tjunctions.push_back({point_index,0, point});
             break;
           }
         }
@@ -190,11 +196,17 @@ Types::PointList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
   std::size_t j = 0;
   // Merge two list
   while (i < list_1.size() && j < list_2.size()) {
-    if (list_1[i].index < list_2[j].index) {
+    if (list_1[i].index <= list_2[j].index && list_1[i].added) {
+
       sorted_list.emplace_back(std::move(list_1[i].point));
       ++i;
-    } else {
+    } else if (list_1[i].index > list_2[j].index) {
       sorted_list.emplace_back(std::move(list_2[j].point));
+      ++j;
+    } else {
+    sorted_list.push_back(list_1[i].point);
+      sorted_list.push_back(list_2[j].point);
+      ++i;
       ++j;
     }
   }
@@ -208,8 +220,7 @@ Types::PointList<T> MergePointMaps(const Types::PointMapList<T> &list_1,
     }
   };
 
-  append_remanings(list_1, i);
-  append_remanings(list_2, j);
+
   return sorted_list;
 }
 
@@ -240,6 +251,47 @@ double EucledianDistance(const P &p1, const P &p2);
 template<>
 double EucledianDistance (const cv::Point &p1, const cv::Point &p2) {
   return std::sqrt(std::pow(p2.x - p1.x, 2) + std::pow(p2.y - p1.y, 2));
+}
+
+// Function to calculate the Gaussian kernel
+double Gaussian(double x, double alpha) {
+    return std::exp(-(x * x) / (2 * alpha * alpha)) / (std::sqrt(2 * M_PI) * alpha);
+}
+
+template<typename PointList = Types::CvPointList>
+// Function to apply Gaussian smoothing to a single dimension
+PointList GausianSmooth1D(const PointList& contour, double alpha, bool is_x = false) {
+    PointList smooth_list;
+    for (size_t i = 0; i < contour.size(); ++i) {
+        double sum = 0.0, weight_sum = 0.0;
+
+        // Apply the Gaussian kernel to each value
+        for (size_t j = 0; j < contour.size(); ++j) {
+            double distance = static_cast<double>(i - j);
+            double weight = Gaussian(distance, alpha);
+
+            sum += (is_x ?  contour[j].x : contour[j].y )  * weight;
+            weight_sum += weight;
+        }
+
+        // Calculate the smoothed value
+        int smooth_value = static_cast<int>(round(sum / weight_sum));
+        Point p;
+        if(is_x)
+            p = {smooth_value, contour[i].y};
+        else
+            p = {contour[i].x, smooth_value};
+        smooth_list.emplace_back(std::move(p));
+    }
+
+    return smooth_list;
+}
+template <typename PointList>
+PointList GausianSmooth (const PointList &contour, const double &alpha = 3) {
+    // Apply Gaussian smoothing to x and y independently
+    PointList smoothed_x = GausianSmooth1D(contour, alpha, true);
+    PointList smoothed_y = GausianSmooth1D(smoothed_x, alpha, false);
+    return smoothed_y;
 }
 }  // namespace CornerDetections::Common
 
